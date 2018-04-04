@@ -15,8 +15,8 @@ DOMAIN_SEARCH_FIELDS = ['ZN_FING', 'DOMAIN', 'DNA_BIND', 'REGION']
 
 JASPAR_DB_HOST = "127.0.0.1" #provided it's on your computer
 JASPAR_DB_NAME = 'jaspar'
-JASPAR_DB_USER = "root"
-JASPAR_DB_PASS = 'tomato1393'
+JASPAR_DB_USER = #username goes here
+JASPAR_DB_PASS = #your password goes here
 jdb = JASPAR5(
      host=JASPAR_DB_HOST,
      name=JASPAR_DB_NAME,
