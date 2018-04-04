@@ -1,4 +1,4 @@
-## AlexKRotation: Notebooks and scripts for database collecting
+# AlexKRotation: Notebooks and scripts for database collecting
 
 **Quick Start:** 
 
@@ -11,7 +11,7 @@ These will put in missing protein sequences and uniprot IDs, and fix some broken
 2. Run missing_uniprot_ids.ipynb (changing directory)
 3. Run filling_in_sequences.ipynb (changing directory)
 
-# Description of Files
+## Description of Files
 
 - **DB_setup.py**: Current database schema created using SQLAlchemy's ORM. 
 
