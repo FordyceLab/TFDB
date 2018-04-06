@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, Integer, String, Float, Sequence, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
@@ -14,33 +13,32 @@ Base = declarative_base()
 
 #making classes for each table in tf.db
 
+class Clone_sequence(Base):
 
-class Protein_sequence(Base):
+    __tablename__ = "Clone_sequence"
 
-    __tablename__ = "protein_sequences"
-
-    pid  = Column(Integer, primary_key=True , autoincrement = True)
-    protein_name = Column(String)
+    clone_id  = Column(Integer, primary_key=True , autoincrement = True)
+    clone_name = Column(String)
     sequence = Column(String)
-    info = relationship('TF_info', back_populates = 'protein_seqs')
+    #info = relationship('TF_info', back_populates = 'protein_seqs')
     experiments = relationship('Experiment', back_populates = 'protein_seqs')
-    protein_dbd_maps = relationship('DBD_TF_Maps', back_populates = 'protein_seqs')
+    clone_dbd_maps = relationship('DBD_Clone_Maps', back_populates = 'seqs')
+    clone_protein_map = relationship('Protein_clone_map', back_populates = 'clones')
 
-    def __init__(self, protein_name, sequence):
+    def __init__(self, clone_name, sequence):
 
-        self.protein_name = protein_name
+        self.clone_name = clone_name
         self.sequence = sequence
 
 class TF_info(Base):
 
     __tablename__ = 'protein_information'
 
-    tf_id = Column(Integer, ForeignKey(Protein_sequence.pid), primary_key = True)
+    uniprot = Column(String, primary_key = True)
     tf_class = Column(String)
     family = Column(String)
-    uniprot = Column(String)
     species = Column(String)
-    protein_seqs = relationship('Protein_sequence', back_populates = 'info')
+    clone_protein_map = relationship('Protein_clone_map', back_populates = 'proteins')
 
     def __init__(self, tf_class, family, species, uniprot):
         self.tf_class = tf_class
@@ -55,7 +53,7 @@ class DBD(Base):
     DBD_id = Column(Integer, primary_key = True, autoincrement = True)
     DBD_sequence = Column(String)
     dbd_type = Column(String)
-    protein_dbd_maps = relationship('DBD_TF_Maps', back_populates = 'DBD')
+    clone_dbd_maps = relationship('DBD_Clone_Maps', back_populates = 'DBD')
 
     def __init__(self, DBD_sequence , dbd_type):
 
@@ -65,33 +63,42 @@ class DBD(Base):
     def __str__(self):
          return "{} {} {}".format(self.DBD_sequence, self.type)
 
-class DBD_TF_Maps(Base):
+class DBD_Clone_Maps(Base):
 
-    __tablename__ = 'DBD_TF_maps'
+    __tablename__ = 'DBD_clone_map'
     #link_id = Column(Integer, autoincrement = True, primary_key = True)
     DBD_id = Column(Integer, ForeignKey(DBD.DBD_id), primary_key = True)
-    protein_ids = Column(Integer, ForeignKey(Protein_sequence.pid), primary_key =True)
-
-
-    protein_seqs= relationship('Protein_sequence', back_populates = 'protein_dbd_maps')
-    DBD = relationship('DBD', back_populates = 'protein_dbd_maps')
+    protein_ids = Column(Integer, ForeignKey(Clone_sequence.clone_id), primary_key =True)
+    seqs= relationship('Clone_sequence', back_populates = 'clone_dbd_maps')
+    DBD = relationship('DBD', back_populates = 'clone_dbd_maps')
 
     def __init__(self, protein, DBD):
         self.protein = protein
         self.DBD = DBD
 
+class Protein_clone_map(Base):
+
+    __tablename__ = 'clone_protein_map'
+
+    clone_id = Column(Integer, ForeignKey(Clone_sequence.clone_id), primary_key = True)
+    uniprot = Column(String, ForeignKey(TF_info.uniprot), primary_key = True)
+    clones = relationship('Clone_sequence', back_populates = 'clone_protein_map')
+    proteins = relationship('TF_info', back_populates = 'clone_protein_map')
+
+    def __init__(self, clone, protein):
+        self.protein = protein
+        self.clone = clone
 
 class Experiment(Base):
 
     __tablename__ = 'experiment'
 
     experiment_id = Column(Integer, primary_key = True, autoincrement = True)
-    protein_id = Column(Integer, ForeignKey(Protein_sequence.pid))
+    clone_id = Column(Integer, ForeignKey(Clone_sequence.clone_id))
     pubmed_id = Column(String)
     assay = Column(String)
     protein_fragment = Column(String)
-    
-    protein_seqs = relationship('Protein_sequence', back_populates = 'experiments')
+    protein_seqs = relationship('Clone_sequence', back_populates = 'experiments')
     pfms = relationship('PFM', back_populates = 'experiments')
 
     def __init__(self, pubmed_id, assay, protein_fragment = 'full'):
@@ -123,3 +130,4 @@ class PFM(Base):
         self.g = g
         self.t = t
         self.db = db
+
