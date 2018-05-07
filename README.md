@@ -1,15 +1,24 @@
 # AlexKRotation: Notebooks and scripts for database collecting
+**Schema:**
+
+![Schema](schema.png)
+
 
 **Quick Start:** 
 
 This will allow you to build and clean the database completely from JSON files contained in this repo.
-1. Run databasebuilder.ipynb (changing the directory/name as you see fit).
+1. Run database_builder.ipynb (changing the directory/name as you see fit).
 
 *Optional:* 
 These will put in missing protein sequences and uniprot IDs, and fix some broken uniprot IDs from Jaspar.
 
 2. Run missing_uniprot_ids.ipynb (changing directory)
 3. Run filling_in_sequences.ipynb (changing directory)
+
+**Adding Data:**
+1. Parse your data into a list of dictionaries, dataframe, or some other useable data format in Python with each experiment/PWM being one line.
+2. Use SQLAlchemy to add in the data to the database, checking for redundancies. Look at the section of databasebuilder.ipynb starting at the comment '#now on to uniprobe' for an example of checking for redundancies and adding new elements if unfamiliar with SQLAlchemy. 
+3. Alternatively, if you know how to add data directly using SQL or R or another language, do that. The vast majority of fields are not required. If you want to know which are, look at DB_setup.py to see which elements are primary keys and are not autoincremented.
 
 ## Description of Files
 
